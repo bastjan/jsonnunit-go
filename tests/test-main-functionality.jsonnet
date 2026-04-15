@@ -1,4 +1,4 @@
-local JSONNUNIT = import "../jsonnet/jsonnunit.libsonnet";
+local JSONNUNIT = import "../lib/jsonnunit.libsonnet";
 
 JSONNUNIT
   .describe('Test "be" functionality',
@@ -63,7 +63,7 @@ JSONNUNIT
       .it('tests JSONNUNIT.to.have.key(key)',
         JSONNUNIT.expect({foo: 'bar', bar: 'foo'}).to.have.key('foo')
       )
-      .it('tests JSONNUNIT.to.have.lengthOf(amount)', [ 
+      .it('tests JSONNUNIT.to.have.lengthOf(amount)', [
         JSONNUNIT.expect('foo').to.have.lengthOf(3),
         JSONNUNIT.expect(['foo', 'bar'],).to.have.lengthOf(2),
         JSONNUNIT.expect({foo: 'bar', bar: 'foo'}).to.have.lengthOf(2),
@@ -106,4 +106,3 @@ JSONNUNIT
         JSONNUNIT.expect('foobarfoo').to.have.string('bar'),
       )
   )
-  

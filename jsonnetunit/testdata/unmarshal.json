@@ -1,0 +1,38 @@
+{
+  "testcases": [
+    {
+      "name": "TestCase1",
+      "tests": {
+        "tests": [
+          {
+            "name": "Test with result array",
+            "result": ["JSONNUNIT--passed", "JSONNUNIT--fail"]
+          },
+          {
+            "name": "Test with result string",
+            "result": "JSONNUNIT--passed"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TestCase2",
+      "tests": {
+        "testcases": [
+          {
+            "name": "TestCase2/1",
+            "tests": {
+              "testcases": [],
+              "tests": [
+                {
+                  "name": "Test with result null"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tests": []
+}
