@@ -6,7 +6,7 @@
         "tests": [
           {
             "name": "Test with result array",
-            "result": ["JSONNUNIT--passed", "JSONNUNIT--fail"]
+            "result": ["JSONNUNIT--passed", "JSONNUNIT--failed"]
           },
           {
             "name": "Test with result string",

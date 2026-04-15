@@ -10,7 +10,7 @@ type TestResult string
 
 const (
 	Pass TestResult = "JSONNUNIT--passed"
-	Fail TestResult = "JSONNUNIT--fail"
+	Fail TestResult = "JSONNUNIT--failed"
 )
 
 func (tr *TestResult) UnmarshalJSONFrom(d *jsontext.Decoder) error {
