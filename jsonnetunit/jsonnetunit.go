@@ -63,7 +63,7 @@ func (a *TestResults) UnmarshalJSONFrom(d *jsontext.Decoder) error {
 }
 
 type TestCase struct {
-	Name       string         `json:"name"`
+	Name   string         `json:"name"`
 	Result TestCaseResult `json:"tests"`
 }
 
@@ -75,4 +75,26 @@ type TestCaseResult struct {
 type Test struct {
 	Name   string      `json:"name"`
 	Result TestResults `json:"result"`
+}
+
+func (t Test) IsPass() bool {
+	return t.Result.IsPass()
+}
+
+func (tc TestCase) IsPass() bool {
+	return tc.Result.IsPass()
+}
+
+func (tcr TestCaseResult) IsPass() bool {
+	for _, tc := range tcr.TestCases {
+		if !tc.IsPass() {
+			return false
+		}
+	}
+	for _, t := range tcr.Tests {
+		if !t.IsPass() {
+			return false
+		}
+	}
+	return true
 }

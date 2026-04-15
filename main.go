@@ -43,6 +43,10 @@ func main() {
 	if err := jsonnetunit.FormatTestCaseResult(os.Stdout, res); err != nil {
 		panic(err)
 	}
+
+	if !res.IsPass() {
+		os.Exit(1)
+	}
 }
 
 type stringSliceFlag []string
