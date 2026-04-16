@@ -12,13 +12,15 @@ local resultIsPass(result) =
 local indent(level) = std.repeat('  ', level);
 
 local collect(testcase, level=0) =
-  local result = { pass: true, output: '' };
+  local result = { pass: true, output: '', failedTests: [], successfulTests: [] };
   local tcr = std.foldl(
     function(acc, tc)
       local c = collect(tc, level=level + 1);
       {
         pass: acc.pass && c.pass,
-        output: acc.output + '%sDESC %s\n' % [ indent(level), tc.name ] + c.output,
+        output: acc.output + '%s%s\n' % [ indent(level), tc.name ] + c.output,
+        successfulTests: acc.successfulTests + c.successfulTests,
+        failedTests: acc.failedTests + c.failedTests,
       },
     testcase.tests.testcases,
     result
@@ -26,8 +28,11 @@ local collect(testcase, level=0) =
   local tr = std.foldl(
     function(acc, r)
       {
-        pass: acc.pass && resultIsPass(r.result),
-        output: acc.output + '%s%s %s\n' % [ indent(level), if resultIsPass(r.result) then 'PASS' else 'FAIL', r.name ],
+        local pass = resultIsPass(r.result),
+        pass: acc.pass && pass,
+        output: acc.output + '%s%s %s\n' % [ indent(level), if pass then '✔' else '✗', r.name ],
+        successfulTests: if pass then acc.successfulTests + [r.name] else acc.successfulTests,
+        failedTests: if pass then acc.failedTests else acc.failedTests + [r.name],
       },
     testcase.tests.tests,
     result
@@ -35,14 +40,17 @@ local collect(testcase, level=0) =
   {
     pass: tcr.pass && tr.pass,
     output: tcr.output + tr.output,
+    failedTests: tcr.failedTests + tr.failedTests,
+    successfulTests: tcr.successfulTests + tr.successfulTests,
   };
 
 local run = function(jsonnetunit)
   local output = collect({ tests: jsonnetunit });
+  local summary = '\n%d ✔ passing\n%d ✗ failing\n' % [ std.length(output.successfulTests), std.length(output.failedTests) ];
   if output.pass then
-    output.output
+    output.output + summary
   else
-    error 'FAIL Some tests failed.\n\n' + output.output;
+    error 'FAIL Some tests failed.\n\n' + output.output + summary;
 
 {
   run: run,
