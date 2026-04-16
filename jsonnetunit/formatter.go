@@ -12,14 +12,14 @@ func FormatTestCaseResult(w io.Writer, result TestCaseResult) error {
 
 func formatTestCase(w io.Writer, result TestCase, level int) error {
 	if level > -1 {
-		fmt.Printf("%s= %s\n", indent(level), result.Name)
+		fmt.Printf("CASE %s%s\n", indent(level), result.Name)
 	}
 	for _, test := range result.Result.Tests {
-		emoji := "❌"
+		header := "FAIL"
 		if test.Result.IsPass() {
-			emoji = "✅"
+			header = "PASS"
 		}
-		fmt.Printf("%s%s %s\n", indent(level+1), emoji, test.Name)
+		fmt.Printf("%s%s  %s\n", indent(level+1), header, test.Name)
 	}
 	for _, sub := range result.Result.TestCases {
 		if err := formatTestCase(w, sub, level+1); err != nil {
