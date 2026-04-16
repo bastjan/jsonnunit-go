@@ -9,23 +9,40 @@ local resultIsPass(result) =
   else
     error 'Invalid result type: ' + std.type(result);
 
-local isPass(testcase) =
-  std.foldl(function(acc, tc) acc && isPass(tc), testcase.tests.testcases, true) &&
-  std.foldl(function(acc, r) acc && resultIsPass(r.result), testcase.tests.tests, true);
+local indent(level) = std.repeat('  ', level);
 
-local indent(level) =
-  std.repeat('  ', level);
-
-local formatOutput(testcase, level=0) =
-  std.foldl(function(acc, tc) acc + '%sDESC %s\n' % [ indent(level), tc.name ] + formatOutput(tc, level=level + 1), testcase.tests.testcases, '') +
-  std.foldl(function(acc, r) acc + '%s%s %s\n' % [ indent(level), if resultIsPass(r.result) then 'PASS' else 'FAIL', r.name ], testcase.tests.tests, '');
+local collect(testcase, level=0) =
+  local result = { pass: true, output: '' };
+  local tcr = std.foldl(
+    function(acc, tc)
+      local c = collect(tc, level=level + 1);
+      {
+        pass: acc.pass && c.pass,
+        output: acc.output + '%sDESC %s\n' % [ indent(level), tc.name ] + c.output,
+      },
+    testcase.tests.testcases,
+    result
+  );
+  local tr = std.foldl(
+    function(acc, r)
+      {
+        pass: acc.pass && resultIsPass(r.result),
+        output: acc.output + '%s%s %s\n' % [ indent(level), if resultIsPass(r.result) then 'PASS' else 'FAIL', r.name ],
+      },
+    testcase.tests.tests,
+    result
+  );
+  {
+    pass: tcr.pass && tr.pass,
+    output: tcr.output + tr.output,
+  };
 
 local run = function(jsonnetunit)
-  local output = formatOutput({ tests: jsonnetunit });
-  if isPass({ tests: jsonnetunit }) then
-    output
+  local output = collect({ tests: jsonnetunit });
+  if output.pass then
+    output.output
   else
-    error 'FAIL Some tests failed.\n\n' + output;
+    error 'FAIL Some tests failed.\n\n' + output.output;
 
 {
   run: run,
